@@ -24,6 +24,9 @@ class AvailableVehicleResource extends Resource
     
     protected static ?string $pluralModelLabel = 'Veicoli Disponibili';
 
+    protected static ?string $navigationGroup = 'Gestione Veicoli';
+    protected static ?int $navigationSort = 2;
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('status', 'disponibile');

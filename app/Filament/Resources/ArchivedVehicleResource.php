@@ -23,6 +23,9 @@ class ArchivedVehicleResource extends Resource
     
     protected static ?string $pluralModelLabel = 'Veicoli Archiviati';
 
+    protected static ?string $navigationGroup = 'Gestione Veicoli';
+    protected static ?int $navigationSort = 4;
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('status', 'archiviato');

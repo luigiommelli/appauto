@@ -23,6 +23,9 @@ class SoldVehicleResource extends Resource
     
     protected static ?string $pluralModelLabel = 'Veicoli Venduti';
 
+    protected static ?string $navigationGroup = 'Gestione Veicoli';
+    protected static ?int $navigationSort = 3;
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('status', 'venduto');

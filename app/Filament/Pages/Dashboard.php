@@ -10,6 +10,10 @@ use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
 {
+
+    protected static ?string $navigationGroup = 'Generale';
+    protected static ?int $navigationSort = 1;
+    
     protected function getHeaderWidgets(): array
     {
         return [
