@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AvailableVehicleResource\Pages;
+use App\Filament\Resources\InArrivoVehicleResource\Pages;
 use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -10,26 +10,25 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use PDF;
 
-class AvailableVehicleResource extends Resource
+class InArrivoVehicleResource extends Resource
 {
     protected static ?string $model = Vehicle::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
     
-    protected static ?string $navigationLabel = 'Veicoli Disponibili';
+    protected static ?string $navigationLabel = 'Veicoli In Arrivo';
     
-    protected static ?string $modelLabel = 'Veicolo Disponibile';
+    protected static ?string $modelLabel = 'Veicolo In Arrivo';
     
-    protected static ?string $pluralModelLabel = 'Veicoli Disponibili';
+    protected static ?string $pluralModelLabel = 'Veicoli In Arrivo';
 
     protected static ?string $navigationGroup = 'Gestione Veicoli';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('status', 'disponibile');
+        return parent::getEloquentQuery()->where('status', 'in_arrivo');
     }
 
     public static function form(Form $form): Form
@@ -215,7 +214,8 @@ class AvailableVehicleResource extends Resource
                             ->readOnly()
                             ->default(0),
                     ])->columns(3),
-                           Forms\Components\Section::make('Dati Cliente')
+
+           Forms\Components\Section::make('Dati Cliente')
     ->schema([
         Forms\Components\TextInput::make('customer_name')
             ->label('Nome Cliente')
@@ -588,134 +588,132 @@ Forms\Components\Section::make('Pagamento Misto')
     ->columns(2)
     ->visible(fn (callable $get) => $get('payment_method') === 'misto'),
 
-
-
-                    Forms\Components\Section::make('Documenti')
-    ->collapsible()
-    ->icon('heroicon-o-document-text')
-    ->description('Documenti del veicolo')
-    ->schema([
-        Forms\Components\FileUpload::make('libretto_files')
-            ->label('Libretto di Circolazione (Max 4)')
-            ->multiple()
-            ->maxFiles(4)
-            ->acceptedFileTypes(['application/pdf', 'image/*'])
-            ->directory('vehicles/libretto')
-            ->previewable(true)
-            ->imagePreviewHeight('150')
-            ->enableOpen()
-            ->enableDownload()
-            ->loadingIndicatorPosition('center')
-            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $record) {
-                if (!$record || !$record->exists) return;
-                
-                $documents = $record->documents()
-                    ->where('category', 'libretto')
-                    ->pluck('file_path')
-                    ->toArray();
-                
-                $component->state($documents);
-            })
-            ->saveRelationshipsUsing(function ($component, $state, $record) {
-                if (!$state) return;
-                
-                $record->documents()->where('category', 'libretto')->delete();
-                
-                foreach ($state as $filePath) {
-                    $record->documents()->create([
-                        'category' => 'libretto',
-                        'file_path' => $filePath,
-                        'filename' => basename($filePath),
-                        'original_name' => basename($filePath),
-                        'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
-                        'mime_type' => mime_content_type(storage_path('app/public/' . $filePath)),
-                        'file_size' => filesize(storage_path('app/public/' . $filePath)),
-                    ]);
-                }
-            })
-            ->dehydrated(false),
-            
-        Forms\Components\FileUpload::make('riparazione_files')
-            ->label('Documenti di Riparazione (Max 10)')
-            ->multiple()
-            ->maxFiles(10)
-            ->acceptedFileTypes(['application/pdf', 'image/*'])
-            ->directory('vehicles/riparazione')
-            ->previewable(true)
-            ->imagePreviewHeight('150')
-            ->enableOpen()
-            ->enableDownload()
-            ->loadingIndicatorPosition('center')
-            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $record) {
-                if (!$record || !$record->exists) return;
-                
-                $documents = $record->documents()
-                    ->where('category', 'riparazione')
-                    ->pluck('file_path')
-                    ->toArray();
-                
-                $component->state($documents);
-            })
-            ->saveRelationshipsUsing(function ($component, $state, $record) {
-                if (!$state) return;
-                
-                $record->documents()->where('category', 'riparazione')->delete();
-                
-                foreach ($state as $filePath) {
-                    $record->documents()->create([
-                        'category' => 'riparazione',
-                        'file_path' => $filePath,
-                        'filename' => basename($filePath),
-                        'original_name' => basename($filePath),
-                        'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
-                        'mime_type' => mime_content_type(storage_path('app/public/' . $filePath)),
-                        'file_size' => filesize(storage_path('app/public/' . $filePath)),
-                    ]);
-                }
-            })
-            ->dehydrated(false),
-            
-        Forms\Components\FileUpload::make('atto_vendita_files')
-            ->label('Atto di Vendita (Max 3)')
-            ->multiple()
-            ->maxFiles(3)
-            ->acceptedFileTypes(['application/pdf', 'image/*'])
-            ->directory('vehicles/atto_vendita')
-            ->reorderable()
-            ->previewable(true)
-            ->imagePreviewHeight('150')
-            ->enableOpen()
-            ->enableDownload()
-            ->loadingIndicatorPosition('center')
-            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $record) {
-                if (!$record || !$record->exists) return;
-                
-                $documents = $record->documents()
-                    ->where('category', 'atto_vendita')
-                    ->pluck('file_path')
-                    ->toArray();
-                
-                $component->state($documents);
-            })
-            ->saveRelationshipsUsing(function ($component, $state, $record) {
-                if (!$state) return;
-                
-                $record->documents()->where('category', 'atto_vendita')->delete();
-                
-                foreach ($state as $filePath) {
-                    $record->documents()->create([
-                        'category' => 'atto_vendita',
-                        'file_path' => $filePath,
-                        'filename' => basename($filePath),
-                        'original_name' => basename($filePath),
-                        'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
-                        'mime_type' => mime_content_type(storage_path('app/public/' . $filePath)),
-                        'file_size' => filesize(storage_path('app/public/' . $filePath)),
-                    ]);
-                }
-            })
-            ->dehydrated(false),
-    ])->columns(1),
+                Forms\Components\Section::make('Documenti')
+                    ->collapsible()
+                    ->icon('heroicon-o-document-text')
+                    ->description('Documenti del veicolo')
+                    ->schema([
+                        Forms\Components\FileUpload::make('libretto_files')
+                            ->label('Libretto di Circolazione (Max 4)')
+                            ->multiple()
+                            ->maxFiles(4)
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->directory('vehicles/libretto')
+                            ->previewable(true)
+                            ->imagePreviewHeight('150')
+                            ->enableOpen()
+                            ->enableDownload()
+                            ->loadingIndicatorPosition('center')
+                            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $record) {
+                                if (!$record || !$record->exists) return;
+                                
+                                $documents = $record->documents()
+                                    ->where('category', 'libretto')
+                                    ->pluck('file_path')
+                                    ->toArray();
+                                
+                                $component->state($documents);
+                            })
+                            ->saveRelationshipsUsing(function ($component, $state, $record) {
+                                if (!$state) return;
+                                
+                                $record->documents()->where('category', 'libretto')->delete();
+                                
+                                foreach ($state as $filePath) {
+                                    $record->documents()->create([
+                                        'category' => 'libretto',
+                                        'file_path' => $filePath,
+                                        'filename' => basename($filePath),
+                                        'original_name' => basename($filePath),
+                                        'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
+                                        'mime_type' => mime_content_type(storage_path('app/public/' . $filePath)),
+                                        'file_size' => filesize(storage_path('app/public/' . $filePath)),
+                                    ]);
+                                }
+                            })
+                            ->dehydrated(false),
+                            
+                        Forms\Components\FileUpload::make('riparazione_files')
+                            ->label('Documenti di Riparazione (Max 10)')
+                            ->multiple()
+                            ->maxFiles(10)
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->directory('vehicles/riparazione')
+                            ->previewable(true)
+                            ->imagePreviewHeight('150')
+                            ->enableOpen()
+                            ->enableDownload()
+                            ->loadingIndicatorPosition('center')
+                            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $record) {
+                                if (!$record || !$record->exists) return;
+                                
+                                $documents = $record->documents()
+                                    ->where('category', 'riparazione')
+                                    ->pluck('file_path')
+                                    ->toArray();
+                                
+                                $component->state($documents);
+                            })
+                            ->saveRelationshipsUsing(function ($component, $state, $record) {
+                                if (!$state) return;
+                                
+                                $record->documents()->where('category', 'riparazione')->delete();
+                                
+                                foreach ($state as $filePath) {
+                                    $record->documents()->create([
+                                        'category' => 'riparazione',
+                                        'file_path' => $filePath,
+                                        'filename' => basename($filePath),
+                                        'original_name' => basename($filePath),
+                                        'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
+                                        'mime_type' => mime_content_type(storage_path('app/public/' . $filePath)),
+                                        'file_size' => filesize(storage_path('app/public/' . $filePath)),
+                                    ]);
+                                }
+                            })
+                            ->dehydrated(false),
+                            
+                        Forms\Components\FileUpload::make('atto_vendita_files')
+                            ->label('Atto di Vendita (Max 3)')
+                            ->multiple()
+                            ->maxFiles(3)
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->directory('vehicles/atto_vendita')
+                            ->reorderable()
+                            ->previewable(true)
+                            ->imagePreviewHeight('150')
+                            ->enableOpen()
+                            ->enableDownload()
+                            ->loadingIndicatorPosition('center')
+                            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $record) {
+                                if (!$record || !$record->exists) return;
+                                
+                                $documents = $record->documents()
+                                    ->where('category', 'atto_vendita')
+                                    ->pluck('file_path')
+                                    ->toArray();
+                                
+                                $component->state($documents);
+                            })
+                            ->saveRelationshipsUsing(function ($component, $state, $record) {
+                                if (!$state) return;
+                                
+                                $record->documents()->where('category', 'atto_vendita')->delete();
+                                
+                                foreach ($state as $filePath) {
+                                    $record->documents()->create([
+                                        'category' => 'atto_vendita',
+                                        'file_path' => $filePath,
+                                        'filename' => basename($filePath),
+                                        'original_name' => basename($filePath),
+                                        'file_type' => pathinfo($filePath, PATHINFO_EXTENSION),
+                                        'mime_type' => mime_content_type(storage_path('app/public/' . $filePath)),
+                                        'file_size' => filesize(storage_path('app/public/' . $filePath)),
+                                    ]);
+                                }
+                            })
+                            ->dehydrated(false),
+                    ])->columns(1),
 
                 Forms\Components\Section::make('Stato del Veicolo')
                     ->schema([
@@ -727,7 +725,7 @@ Forms\Components\Section::make('Pagamento Misto')
                                 'venduto' => 'Venduto',
                                 'archiviato' => 'Archiviato',
                             ])
-                            ->default('disponibile')
+                            ->default('in_arrivo')  // ← DEFAULT: In Arrivo
                             ->required(),
                         Forms\Components\TextInput::make('sale_price')
                             ->label('Prezzo di Vendita')
@@ -769,9 +767,9 @@ Forms\Components\Section::make('Pagamento Misto')
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Stato')
                     ->colors([
-                        'success' => 'disponibile',
+                        'info' => 'in_arrivo',  // ← Colore blu per "In Arrivo"
                     ])
-                    ->formatStateUsing(fn (string $state): string => 'Disponibile'),
+                    ->formatStateUsing(fn (string $state): string => 'In Arrivo'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creato il')
                     ->dateTime()
@@ -779,16 +777,16 @@ Forms\Components\Section::make('Pagamento Misto')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // Nessun filtro necessario, mostriamo solo disponibili
+                // Nessun filtro necessario, mostriamo solo in arrivo
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('sell')
-                    ->label('Vendi')
-                    ->icon('heroicon-o-currency-dollar')
-                    ->color('warning')
+                Tables\Actions\Action::make('mark_available')
+                    ->label('Segna Disponibile')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
                     ->action(function (Vehicle $record) {
-                        $record->update(['status' => 'venduto']);
+                        $record->update(['status' => 'disponibile']);
                     }),
             ])
             ->bulkActions([
@@ -808,10 +806,9 @@ Forms\Components\Section::make('Pagamento Misto')
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAvailableVehicles::route('/'),
-            'create' => Pages\CreateAvailableVehicle::route('/create'),
-            'edit' => Pages\EditAvailableVehicle::route('/{record}/edit'),
-            'view' => Pages\ViewAvailableVehicle::route('/{record}'),
+            'index' => Pages\ListInArrivoVehicles::route('/'),
+            'create' => Pages\CreateInArrivoVehicle::route('/create'),
+            'edit' => Pages\EditInArrivoVehicle::route('/{record}/edit'),
         ];
     }
     

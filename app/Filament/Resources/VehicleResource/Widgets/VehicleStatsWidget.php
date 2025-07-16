@@ -29,6 +29,13 @@ class VehicleStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
 
+
+            Stat::make('In Arrivo', Vehicle::where('status', 'in_arrivo')->count())
+                ->description('Veicoli in arrivo')
+                ->descriptionIcon('heroicon-o-truck')
+                ->chart([3, 5, 8, 2, 12, 6, 9])
+                ->color('info'),
+
             Stat::make('Venduti', $stats->venduti)
                 ->description('Transazioni completate')
                 ->descriptionIcon('heroicon-m-banknotes')

@@ -208,25 +208,31 @@ class VehicleResource extends Resource
                             ->readOnly()
                             ->default(0),
                     ])->columns(3),
-                Forms\Components\Section::make('Dati Cliente')
-                    ->schema([
-                        Forms\Components\TextInput::make('customer_name')
-                            ->label('Nome Cliente')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('customer_surname')
-                            ->label('Cognome Cliente')
-                            ->maxLength(255),
-                        Forms\Components\Select::make('payment_method')
-                            ->label('Metodo di Pagamento')
-                            ->options([
-                                'contanti' => 'Contanti',
-                                'bonifico' => 'Bonifico',
-                                'permuta' => 'Permuta',
-                                'finanziamento' => 'Finanziamento',
-                                'misto' => 'Misto',
-                            ]),
-                    ])->columns(2),
-
+               Forms\Components\Section::make('Dati Cliente')
+    ->schema([
+        Forms\Components\TextInput::make('customer_name')
+            ->label('Nome Cliente')
+            ->maxLength(255),
+        Forms\Components\TextInput::make('customer_surname')
+            ->label('Cognome Cliente')
+            ->maxLength(255),
+        Forms\Components\TextInput::make('phone_number')
+            ->label('Numero di Telefono')
+            ->tel()
+            ->maxLength(20)
+            ->placeholder('+39 123 456 7890')
+            ->rule('regex:/^[\+]?[0-9\s\-\(\)]+$/')
+            ->helperText('Inserisci il numero di telefono del cliente'),
+        Forms\Components\Select::make('payment_method')
+            ->label('Metodo di Pagamento')
+            ->options([
+                'contanti' => 'Contanti',
+                'bonifico' => 'Bonifico',
+                'permuta' => 'Permuta',
+                'finanziamento' => 'Finanziamento',
+                'misto' => 'Misto',
+            ]),
+    ])->columns(2),
                     Forms\Components\Section::make('Documenti')
     ->collapsible()
     ->icon('heroicon-o-document-text')
@@ -290,7 +296,7 @@ class VehicleResource extends Resource
             ]);
     }
 
-   public static function table(Table $table): Table
+  public static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -327,11 +333,13 @@ class VehicleResource extends Resource
                     ->label('Stato')
                     ->colors([
                         'success' => 'disponibile',
+                        'info' => 'in_arrivo',
                         'warning' => 'venduto', 
                         'danger' => 'archiviato',
                     ])
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'disponibile' => 'Disponibile',
+                        'in_arrivo' => 'In Arrivo',
                         'venduto' => 'Venduto',
                         'archiviato' => 'Archiviato',
                     }),
@@ -345,17 +353,39 @@ class VehicleResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(function ($record) {
+                return match($record->status) {
+                    'archiviato' => '/admin/archived-vehicles/' . $record->id,
+                    'venduto' => '/admin/sold-vehicles/' . $record->id . '/edit', 
+                    'disponibile' => '/admin/available-vehicles/' . $record->id . '/edit',
+                     'in_arrivo' => '/admin/in-arrivo-vehicles/' . $record->id . '/edit',
+                    default => '/admin/vehicles/' . $record->id . '/edit'
+                };
+            })
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Stato')
                     ->options([
                         'disponibile' => 'Disponibile',
+                        'in_arrivo' => 'In Arrivo',
                         'venduto' => 'Venduto',
                         'archiviato' => 'Archiviato',
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('manage')
+                    ->label('Gestisci')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->url(function ($record) {
+                        return match($record->status) {
+                            'archiviato' => '/admin/archived-vehicles/' . $record->id,
+                            'venduto' => '/admin/sold-vehicles/' . $record->id . '/edit', 
+                            'disponibile' => '/admin/available-vehicles/' . $record->id . '/edit',
+                              'in_arrivo' => '/admin/in-arrivo-vehicles/' . $record->id . '/edit',
+                            default => '/admin/vehicles/' . $record->id . '/edit'
+                        };
+                    })
+                    ->openUrlInNewTab(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

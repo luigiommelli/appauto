@@ -39,6 +39,7 @@ class Vehicle extends Model
         'customer_name',
         'customer_surname',
         'payment_method',
+        'phone_number',
         'payment_details',
         'status',        // ← Sostituisce sold e archived
         'sale_price',
