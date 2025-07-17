@@ -49,7 +49,6 @@ class AvailableVehicleResource extends Resource
                             ->maxLength(255),
                         Forms\Components\TextInput::make('chassis')
                             ->label('Telaio')
-                            ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('registration_year')
                             ->label('Anno Immatricolazione')
@@ -57,6 +56,11 @@ class AvailableVehicleResource extends Resource
                             ->numeric()
                             ->minValue(1900)
                             ->maxValue(date('Y')),
+                        Forms\Components\TextInput::make('km')
+                            ->label('Chilometri')
+                            ->numeric()
+                            ->suffix(' km')
+                            ->placeholder('0'),
                         Forms\Components\TextInput::make('color')
                             ->label('Colore')
                             ->required()
@@ -77,7 +81,6 @@ class AvailableVehicleResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('registry_number')
                             ->label('N° Registro')
-                            ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
                         Forms\Components\TextInput::make('archive_number')

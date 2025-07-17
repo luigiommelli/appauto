@@ -15,6 +15,7 @@ class Vehicle extends Model
         'license_plate',
         'chassis',
         'registration_year',
+        'km', 
         'color',
         'fuel_type',
         'second_key',
