@@ -15,7 +15,7 @@ class Vehicle extends Model
         'license_plate',
         'chassis',
         'registration_year',
-        'km', 
+        'km',
         'color',
         'fuel_type',
         'second_key',
@@ -42,7 +42,7 @@ class Vehicle extends Model
         'payment_method',
         'phone_number',
         'payment_details',
-        'status',        // ← Sostituisce sold e archived
+        'status',
         'sale_price',
     ];
 
@@ -51,11 +51,38 @@ class Vehicle extends Model
         'vat_exposed' => 'boolean',
         'purchase_date' => 'date',
         'payment_details' => 'array',
-        'status' => 'string',    // ← Manteniamo solo questo
+        'status' => 'string',
     ];
-    
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::saving(function ($vehicle) {
+            $vehicle->total_cost = $vehicle->calculateTotalCost();
+        });
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(VehicleDocument::class);
+    }
+
+    public function calculateTotalCost(): float
+    {
+        return collect([
+            $this->purchase_price ?? 0, 
+            $this->broker ?? 0, 
+            $this->transport ?? 0,
+            $this->mechatronics ?? 0, 
+            $this->bodywork ?? 0, 
+            $this->tire_shop ?? 0,
+            $this->upholstery ?? 0, 
+            $this->travel ?? 0, 
+            $this->inspection ?? 0,
+            $this->miscellaneous ?? 0, 
+            $this->spare_parts ?? 0, 
+            $this->washing ?? 0
+        ])->sum();
     }
 }

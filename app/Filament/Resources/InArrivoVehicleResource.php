@@ -96,7 +96,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)
-                             ->lazy()
+                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -106,7 +106,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)    
-                             ->lazy()                      
+                             ->live(onBlur: true)                      
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -116,7 +116,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)   
-                             ->lazy()                       
+                             ->live(onBlur: true)                       
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -126,7 +126,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)
-                             ->lazy()      
+                             ->live(onBlur: true)      
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -136,7 +136,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)
-                             ->lazy()                           
+                             ->live(onBlur: true)                           
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -146,7 +146,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0) 
-                             ->lazy()                          
+                             ->live(onBlur: true)                          
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -156,7 +156,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)      
-                             ->lazy()                
+                             ->live(onBlur: true)                
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -166,7 +166,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)    
-                             ->lazy()         
+                             ->live(onBlur: true)         
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -176,7 +176,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)     
-                             ->lazy()      
+                             ->live(onBlur: true)      
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -186,7 +186,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)   
-                             ->lazy()
+                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -196,7 +196,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)
-                             ->lazy()
+                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -206,7 +206,7 @@ class InArrivoVehicleResource extends Resource
                             ->prefix('€')
                             ->step(0.01)
                             ->default(0)  
-                             ->lazy()
+                             ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
@@ -406,22 +406,19 @@ Forms\Components\Section::make('Pagamento Finanziamento')
         Forms\Components\TextInput::make('payment_details.finanziamento.numero_rate')
             ->label('Numero Rate')
             ->numeric()
-            ->minValue(1)
-            ->required(),
+            ->minValue(1),
         Forms\Components\TextInput::make('payment_details.finanziamento.importo_rata')
             ->label('Importo Rata')
             ->numeric()
             ->prefix('€')
-            ->step(0.01)
-            ->required(),
+            ->step(0.01),
         Forms\Components\TextInput::make('payment_details.finanziamento.istituto_finanziario')
             ->label('Istituto Finanziario')
             ->maxLength(255)
             ->required(),
         Forms\Components\DatePicker::make('payment_details.finanziamento.data_inizio')
             ->label('Data Inizio')
-            ->default(now())
-            ->required(),
+            ->default(now()),
         Forms\Components\Textarea::make('payment_details.finanziamento.note')
             ->label('Note')
             ->maxLength(500)
@@ -540,7 +537,6 @@ Forms\Components\Section::make('Pagamento Misto')
                     ->label('Numero Rate')
                     ->numeric()
                     ->minValue(1)
-                    ->required()
                     ->visible(fn (callable $get) => $get('tipo') === 'finanziamento'),
                 
                 Forms\Components\TextInput::make('importo_rata')
@@ -548,7 +544,6 @@ Forms\Components\Section::make('Pagamento Misto')
                     ->numeric()
                     ->prefix('€')
                     ->step(0.01)
-                    ->required()
                     ->visible(fn (callable $get) => $get('tipo') === 'finanziamento'),
                 
                 Forms\Components\TextInput::make('istituto_finanziario')
@@ -560,7 +555,6 @@ Forms\Components\Section::make('Pagamento Misto')
                 Forms\Components\DatePicker::make('data_inizio')
                     ->label('Data Inizio')
                     ->default(now())
-                    ->required()
                     ->visible(fn (callable $get) => $get('tipo') === 'finanziamento'),
                 
                 // Campo Note generale per tutti
@@ -751,6 +745,16 @@ Forms\Components\Section::make('Pagamento Misto')
                     ->label('Targa')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('registry_number')  
+                    ->label('N° Registro')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('archive_number') 
+                    ->label('N° Archiviazione')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('registration_year')
                     ->label('Anno')
                     ->sortable(),
@@ -815,25 +819,22 @@ Forms\Components\Section::make('Pagamento Misto')
         ];
     }
     
-    private static function calculateTotalCost(Forms\Set $set, Forms\Get $get): void
+ private static function calculateTotalCost(Forms\Set $set, Forms\Get $get): void
     {
-        $purchasePrice = (float) ($get('purchase_price') ?? 0);
-        $broker = (float) ($get('broker') ?? 0);
-        $transport = (float) ($get('transport') ?? 0);
-        $mechatronics = (float) ($get('mechatronics') ?? 0);
-        $bodywork = (float) ($get('bodywork') ?? 0);
-        $tireShop = (float) ($get('tire_shop') ?? 0);
-        $upholstery = (float) ($get('upholstery') ?? 0);
-        $travel = (float) ($get('travel') ?? 0);
-        $inspection = (float) ($get('inspection') ?? 0);
-        $miscellaneous = (float) ($get('miscellaneous') ?? 0);
-        $spareParts = (float) ($get('spare_parts') ?? 0);
-        $washing = (float) ($get('washing') ?? 0);
+        try {
+            $fields = [
+                'purchase_price', 'broker', 'transport', 'mechatronics', 
+                'bodywork', 'tire_shop', 'upholstery', 'travel', 
+                'inspection', 'miscellaneous', 'spare_parts', 'washing'
+            ];
+            
+            $total = collect($fields)
+                ->sum(fn($field) => (float) ($get($field) ?? 0));
 
-        $total = $purchasePrice + $broker + $transport + $mechatronics + $bodywork + 
-                $tireShop + $upholstery + $travel + $inspection + $miscellaneous + 
-                $spareParts + $washing;
-
-        $set('total_cost', number_format($total, 2, '.', ''));
+            $set('total_cost', number_format($total, 2, '.', ''));
+            
+        } catch (\Exception $e) {
+            \Log::warning('Calcolo costi fallito: ' . $e->getMessage());
+        }
     }
 }
