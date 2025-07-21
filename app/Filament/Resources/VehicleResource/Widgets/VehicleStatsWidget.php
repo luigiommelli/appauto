@@ -15,7 +15,8 @@ class VehicleStatsWidget extends BaseWidget
             COUNT(*) as total,
             COUNT(CASE WHEN status = "disponibile" THEN 1 END) as disponibili,
             COUNT(CASE WHEN status = "venduto" THEN 1 END) as venduti,
-            COUNT(CASE WHEN status = "archiviato" THEN 1 END) as archiviati
+            COUNT(CASE WHEN status = "archiviato" THEN 1 END) as archiviati,
+            SUM(CASE WHEN status = "disponibile" THEN total_cost ELSE 0 END) as capitale_disponibili
         ')->first();
 
         return [
@@ -45,6 +46,11 @@ class VehicleStatsWidget extends BaseWidget
                 ->description('Veicoli archiviati')
                 ->descriptionIcon('heroicon-m-archive-box')
                 ->color('gray'),
+
+            Stat::make('Capitale a Terra', '€' . number_format($stats->capitale_disponibili ?? 0, 0, ',', '.'))
+                ->description('Capitale investito disponibili')
+                ->descriptionIcon('heroicon-m-currency-euro')
+                ->color('success'),
         ];
     }
 }
