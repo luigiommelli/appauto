@@ -212,6 +212,26 @@ class SoldVehicleResource extends Resource
                             ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                 self::calculateTotalCost($set, $get);
                             }),
+                            Forms\Components\TextInput::make('passaggio')          // AGGIUNGI QUESTO
+                            ->label('Passaggio')
+                            ->numeric()
+                            ->prefix('€')
+                            ->step(0.01)
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                self::calculateTotalCost($set, $get);
+                            }),
+                        Forms\Components\TextInput::make('accessori')          // AGGIUNGI QUESTO
+                            ->label('Accessori')
+                            ->numeric()
+                            ->prefix('€')
+                            ->step(0.01)
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                self::calculateTotalCost($set, $get);
+                            }),
                         Forms\Components\TextInput::make('total_cost')
                             ->label('Totale Costo')
                             ->numeric()
@@ -836,7 +856,7 @@ Forms\Components\Section::make('Documenti')
             $fields = [
                 'purchase_price', 'broker', 'transport', 'mechatronics', 
                 'bodywork', 'tire_shop', 'upholstery', 'travel', 
-                'inspection', 'miscellaneous', 'spare_parts', 'washing'
+                'inspection', 'miscellaneous', 'spare_parts', 'washing','passaggio', 'accessori'
             ];
             
             $total = collect($fields)

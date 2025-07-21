@@ -36,6 +36,8 @@ class Vehicle extends Model
         'miscellaneous',
         'spare_parts',
         'washing',
+        'passaggio',        
+        'accessori', 
         'total_cost',
         'customer_name',
         'customer_surname',
@@ -82,7 +84,9 @@ class Vehicle extends Model
             $this->inspection ?? 0,
             $this->miscellaneous ?? 0, 
             $this->spare_parts ?? 0, 
-            $this->washing ?? 0
+            $this->washing ?? 0,
+            $this->passaggio ?? 0,      
+            $this->accessori ?? 0,
         ])->sum();
     }
 }
